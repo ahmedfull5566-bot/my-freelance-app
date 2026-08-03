@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freelance Skill Matrix & Financial Ikigai</title>
+    
+    <!-- External Libraries -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        :root {
+            /* Light Theme Variables */
+            --bg-color-light: #f3f4f6;
+            --text-color-light: #1f2937;
+            --text-muted-light: #6b7280;
+            --card-bg-light: rgba(255, 255, 255, 0.7);
+            --card-border-light: rgba(255, 255, 255, 0.5);
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #3b82f6;
+            
+            /* Dark Theme Variables */
+            --bg-color-dark: #111827;
+            --text-color-dark: #f9fafb;
+            --text-muted-dark: #9ca3af;
+            --card-bg-dark: rgba(31, 41, 55, 0.7);
+            --card-border-dark: rgba(75, 85, 99, 0.4);
+            
+            /* Active Theme Pointers (Default Dark) */
+            --bg-color: var(--bg-color-dark);
+            --text-color: var(--text-color-dark);
+            --text-muted: var(--text-muted-dark);
+            --card-bg: var(--card-bg-dark);
+            --card-border: var(--card-border-dark);
+            
+            --glass-blur: blur(12px);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
+            --radius-md: 0.75rem;
+            --radius-lg: 1rem;
+            --radius-full: 9999px;
+            
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        html[data-theme="light"] {
+            --bg-color: var(--bg-color-light);
+            --text-color: var(--text-color-light);
+            --text-muted: var(--text-muted-light);
+            --card-bg: var(--card-bg-light);
+            --card-border: var(--card-border-light);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: var(--transition);
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+            /* Background pattern for depth */
+            background-image: radial-gradient(circle at 15% 50%, rgba(79, 70, 229, 0.05), transparent 25%),
+                              radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.05), transparent 25%);
+        }
+
+        .glass-panel {
+            background: var(--card-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            position: fixed;
+            right: 0;
+            top: 0;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-muted);
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-right: 260px; /* Sidebar width */
+            padding: 2rem;
+            min-height: 100vh;
+            max-width: 1600px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1rem 1.5rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .btn-primary { background: var(--primary-color); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); shadow: var(--shadow-md); }
+        .btn-outline { background: transparent; border: 1px solid var(--card-border); color: var(--text-color); }
+        .btn-outline:hover { background: rgba(255,255,255,0.1); }
+        .btn-success { background: var(--success-color); color: white; }
+        .btn-danger { background: var(--danger-color); color: white; }
+        
+        .icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.25rem;
+            padding: 0.5rem;
+            border-radius: var(--radius-full);
+            transition: var(--transition);
+        }
+        .icon-btn:hover { color: var(--text-color); background: rgba(128,128,128,0.1); }
+
+        /* Tabs/Pages */
+        .page-section {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+        .page-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Dashboard Grid */
+        .grid-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .stat-card .stat-title { color: var(--text-muted); font-size: 0.9rem; font-weight: 600; display: flex; justify-content: space-between;}
+        .stat-card .stat-value { font-size: 2rem; font-weight: bold; color: var(--text-color); }
+        .stat-card .progress-container { width: 100%; height: 6px; background: rgba(128,128,128,0.2); border-radius: 3px; margin-top: 0.5rem; overflow: hidden; }
+        .stat-card .progress-bar { height: 100%; border-radius: 3px; transition: width 1s ease-in-out; }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .chart-container { padding: 1.5rem; height: 350px; position: relative; }
+
+        /* Skills Grid */
+        .controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .search-input {
+            padding: 0.6rem 1rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            color: var(--text-color);
+            width: 300px;
+            outline: none;
+        }
+        
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .skill-card {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            position: relative;
+            transition: transform 0.2s;
+        }
+        .skill-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+        
+        .skill-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .skill-title { font-size: 1.2rem; font-weight: bold; color: var(--primary-color); margin-bottom: 0.25rem;}
+        .skill-market { font-size: 0.8rem; padding: 0.2rem 0.6rem; border-radius: var(--radius-full); background: rgba(79, 70, 229, 0.1); color: var(--info-color); }
+        
+        .skill-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; font-size: 0.9rem; }
+        .metric { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--card-border); padding-bottom: 0.2rem;}
+        
+        .skill-actions { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--card-border); }
+
+        /* Ikigai Section */
+        .ikigai-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .ikigai-zone { padding: 1.5rem; border-top: 4px solid; }
+        .zone-golden { border-color: var(--warning-color); }
+        .zone-develop { border-color: var(--info-color); }
+        .zone-uninvested { border-color: var(--success-color); }
+        .zone-upcoming { border-color: var(--danger-color); }
+        .ikigai-skill-tag { display: inline-block; padding: 0.4rem 0.8rem; background: rgba(128,128,128,0.1); border-radius: var(--radius-full); margin: 0.25rem; font-size: 0.85rem;}
+
+        /* Recommendation Section */
+        .rec-card { padding: 1.5rem; margin-bottom: 1rem; border-right: 4px solid var(--primary-color); }
+        .rec-steps { margin-top: 1rem; padding-right: 1.5rem; list-style-type: decimal; color: var(--text-muted); line-height: 1.6;}
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+            display: none; justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-content {
+            width: 90%; max-width: 600px; padding: 2rem;
+            max-height: 90vh; overflow-y: auto;
+            position: relative; animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp { from{ transform: translateY(50px); opacity:0; } to{ transform: translateY(0); opacity:1; } }
+        
+        .modal-close { position: absolute; top: 1rem; left: 1rem; }
+
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.9rem;}
+        .form-control {
+            width: 100%; padding: 0.75rem; border-radius: var(--radius-md);
+            border: 1px solid var(--card-border); background: rgba(128,128,128,0.05);
+            color: var(--text-color); font-family: inherit; transition: var(--transition);
+        }
+        .form-control:focus { border-color: var(--primary-color); outline: none; box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+        /* Toast Notifications */
+        .toast-container { position: fixed; bottom: 2rem; left: 2rem; display: flex; flex-direction: column; gap: 0.75rem; z-index: 9999; }
+        .toast {
+            padding: 1rem 1.5rem; border-radius: var(--radius-md); color: white;
+            display: flex; align-items: center; gap: 0.75rem; box-shadow: var(--shadow-lg);
+            animation: slideRight 0.3s ease forwards; opacity: 0; transform: translateX(-50px);
+        }
+        .toast.success { background-color: var(--success-color); }
+        .toast.error { background-color: var(--danger-color); }
+        .toast.info { background-color: var(--info-color); }
+        @keyframes slideRight { to { opacity: 1; transform: translateX(0); } }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .charts-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(100%); width: 240px; }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .main-content { margin-right: 0; padding: 1rem; }
+            .mobile-menu-btn { display: block !important; }
+            .topbar { flex-direction: column; gap: 1rem; align-items: flex-start;}
+        }
+        .mobile-menu-btn { display: none; }
+        
+        /* Print Styles */
+        @media print {
+            .sidebar, .topbar, .controls-bar, .skill-actions { display: none !important; }
+            .main-content { margin: 0; padding: 0; }
+            body { background: white; color: black; }
+            .glass-panel { box-shadow: none; border: 1px solid #ccc; background: white;}
+            .page-section { display: block !important; page-break-after: always;}
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar glass-panel" id="sidebar">
+        <div class="brand">
+            <i class="fa-solid fa-layer-group"></i>
+            <span>Skill Matrix</span>
+        </div>
+        <ul class="nav-links">
+            <li class="nav-item active" data-target="dashboard">
+                <i class="fa-solid fa-chart-pie"></i> لوحة القيادة
+            </li>
+            <li class="nav-item" data-target="skills">
+                <i class="fa-solid fa-list-check"></i> إدارة المهارات
+            </li>
+            <li class="nav-item" data-target="ikigai">
+                <i class="fa-solid fa-yin-yang"></i> تحليل إيكيغاي
+            </li>
+            <li class="nav-item" data-target="recommendations">
+                <i class="fa-solid fa-lightbulb"></i> التوصيات والخطة
+            </li>
+            <li class="nav-item" data-target="settings">
+                <i class="fa-solid fa-gear"></i> الإعدادات والبيانات
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content" id="report-content">
+        <!-- Topbar -->
+        <header class="topbar glass-panel">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <button class="icon-btn mobile-menu-btn" id="mobile-toggle"><i class="fa-solid fa-bars"></i></button>
+                <h2 id="page-title">لوحة القيادة</h2>
+            </div>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <button class="btn btn-outline" id="export-pdf-btn">
+                    <i class="fa-solid fa-file-pdf"></i> تصدير تقرير
+                </button>
+                <button class="icon-btn" id="theme-toggle" title="تبديل المظهر">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="page-section active">
+            <div class="grid-stats">
+                <div class="stat-card glass-panel">
+                    <div class="stat-title">إجمالي المهارات <i class="fa-solid fa-layer-group text-primary"></i></div>
+                    <div class="stat-value" id="stat-total-skills">0</div>
+                </div>
+                <div class="stat-card glass-panel">
+                    <div class="stat-title">جاهزية العمل الحر <i class="fa-solid fa-rocket text-success"></i></div>
+                    <div class="stat-value" id="stat-readiness">0%</div>
+                    <div class="progress-container"><div class="progress-bar bg-success" id="prog-readiness" style="width:0%; background: var(--success-color);"></div></div>
+                </div>
+                <div class="stat-card glass-panel">
+                    <div class="stat-title">متوسط الاحترافية <i class="fa-solid fa-user-tie text-info"></i></div>
+                    <div class="stat-value" id="stat-professional">0%</div>
+                    <div class="progress-container"><div class="progress-bar bg-info" id="prog-professional" style="width:0%; background: var(--info-color);"></div></div>
+                </div>
+                <div class="stat-card glass-panel">
+                    <div class="stat-title">مؤشر الربحية العام <i class="fa-solid fa-wallet text-warning"></i></div>
+                    <div class="stat-value" id="stat-profitability">0%</div>
+                    <div class="progress-container"><div class="progress-bar bg-warning" id="prog-profitability" style="width:0%; background: var(--warning-color);"></div></div>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-container glass-panel">
+                    <canvas id="mainRadarChart"></canvas>
+                </div>
+                <div class="chart-container glass-panel">
+                    <canvas id="marketDoughnutChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-container glass-panel" style="height: 400px;">
+                <canvas id="topSkillsBarChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="page-section">
+            <div class="controls-bar glass-panel" style="padding: 1rem;">
+                <input type="text" class="search-input" id="search-skill" placeholder="ابحث عن مهارة...">
+                <div style="display: flex; gap: 0.5rem;">
+                    <select class="form-control" id="filter-market" style="width: auto;">
+                        <option value="all">كل الأسواق</option>
+                        <option value="مصر">مصر</option>
+                        <option value="الوطن العربي">الوطن العربي</option>
+                        <option value="عالمي">عالمي</option>
+                    </select>
+                    <button class="btn btn-primary" id="btn-open-add-modal">
+                        <i class="fa-solid fa-plus"></i> إضافة مهارة
+                    </button>
+                </div>
+            </div>
+            <div class="skills-grid" id="skills-container">
+                <!-- Skills injected by JS -->
+            </div>
+        </section>
+
+        <!-- Ikigai Section -->
+        <section id="ikigai" class="page-section">
+            <div class="glass-panel" style="padding: 2rem; margin-bottom: 2rem; text-align: center;">
+                <h3 style="margin-bottom: 1rem; color: var(--primary-color);">التحليل المالي والشغف (Ikigai)</h3>
+                <p style="color: var(--text-muted); max-width: 800px; margin: auto;">
+                    يقوم هذا المحرك بتصنيف مهاراتك بناءً على التقاطع بين (ما تحب، ما تتقن، ما يحتاجه السوق، وما يدر ربحاً) لتوجيه جهودك بدقة.
+                </p>
+            </div>
+            <div class="ikigai-grid">
+                <div class="glass-panel ikigai-zone zone-golden">
+                    <h4><i class="fa-solid fa-star text-warning"></i> المنطقة الذهبية</h4>
+                    <p style="font-size: 0.85rem; color:var(--text-muted); margin-bottom: 1rem;">مهارات تحبها، تتقنها، ومطلوبة بشدة.</p>
+                    <div id="zone-golden-items"></div>
+                </div>
+                <div class="glass-panel ikigai-zone zone-uninvested">
+                    <h4><i class="fa-solid fa-gem text-success"></i> جيدة غير مستثمرة</h4>
+                    <p style="font-size: 0.85rem; color:var(--text-muted); margin-bottom: 1rem;">تتقنها ولكن لم تستثمرها مالياً بشكل كافٍ.</p>
+                    <div id="zone-uninvested-items"></div>
+                </div>
+                <div class="glass-panel ikigai-zone zone-develop">
+                    <h4><i class="fa-solid fa-heart text-info"></i> تحبها وتحتاج تطوير</h4>
+                    <p style="font-size: 0.85rem; color:var(--text-muted); margin-bottom: 1rem;">شغوف بها لكن جودتك فيها تحتاج لرفع.</p>
+                    <div id="zone-develop-items"></div>
+                </div>
+                <div class="glass-panel ikigai-zone zone-upcoming">
+                    <h4><i class="fa-solid fa-arrow-trend-up text-danger"></i> مهارات السوق القادمة</h4>
+                    <p style="font-size: 0.85rem; color:var(--text-muted); margin-bottom: 1rem;">مطلوبة جداً ولكنك تفتقر للخبرة فيها حالياً.</p>
+                    <div id="zone-upcoming-items"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recommendations Section -->
+        <section id="recommendations" class="page-section">
+            <div class="glass-panel" style="padding: 2rem; margin-bottom: 2rem;">
+                <h3 style="margin-bottom: 1rem; color: var(--primary-color);">خطة العمل الذكية (Action Plan)</h3>
+                <p style="color: var(--text-muted);">بناءً على تحليل البيانات، هذه هي التوصيات المخصصة لكل مهارة لديك لزيادة أرباحك في العمل الحر.</p>
+            </div>
+            <div id="recommendations-container">
+                <!-- Recs injected by JS -->
+            </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="settings" class="page-section">
+            <div class="glass-panel" style="padding: 2rem; max-width: 600px; margin: 0 auto;">
+                <h3 style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--card-border); padding-bottom: 1rem;">إدارة بيانات المشروع</h3>
+                
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div>
+                        <h4 style="margin-bottom: 0.5rem;">تصدير البيانات (Backup)</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">حفظ نسخة من جميع مهاراتك لاسترجاعها لاحقاً.</p>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn btn-outline" id="btn-export-json"><i class="fa-solid fa-code"></i> تصدير JSON</button>
+                            <button class="btn btn-outline" id="btn-export-csv"><i class="fa-solid fa-file-csv"></i> تصدير CSV</button>
+                        </div>
+                    </div>
+                    
+                    <div style="border-top: 1px solid var(--card-border); padding-top: 1.5rem;">
+                        <h4 style="margin-bottom: 0.5rem;">استيراد البيانات (Restore)</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">استعادة بيانات مهاراتك من ملف JSON سابق.</p>
+                        <input type="file" id="import-file" accept=".json" style="display: none;">
+                        <button class="btn btn-primary" id="btn-import-trigger"><i class="fa-solid fa-upload"></i> استيراد ملف JSON</button>
+                    </div>
+
+                    <div style="border-top: 1px solid var(--card-border); padding-top: 1.5rem;">
+                        <h4 style="margin-bottom: 0.5rem; color: var(--danger-color);">منطقة الخطر</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">مسح جميع البيانات والعودة للوضع الافتراضي.</p>
+                        <button class="btn btn-danger" id="btn-reset-data"><i class="fa-solid fa-trash"></i> إعادة ضبط المصنع</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Add/Edit Skill Modal -->
+    <div class="modal-overlay" id="skill-modal">
+        <div class="modal-content glass-panel">
+            <button class="icon-btn modal-close" id="close-modal"><i class="fa-solid fa-xmark"></i></button>
+            <h2 id="modal-title" style="margin-bottom: 1.5rem; color: var(--primary-color);">إضافة مهارة جديدة</h2>
+            
+            <form id="skill-form">
+                <input type="hidden" id="skill-id">
+                
+                <div class="form-group">
+                    <label class="form-label">اسم المهارة</label>
+                    <input type="text" id="skill-name" class="form-control" required placeholder="مثال: تطوير واجهات الويب">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">السوق المستهدف</label>
+                        <select id="skill-market" class="form-control" required>
+                            <option value="مصر">مصر</option>
+                            <option value="الوطن العربي">الوطن العربي</option>
+                            <option value="عالمي">السوق العالمي</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">طلب السوق (1-10)</label>
+                        <input type="number" id="skill-demand" class="form-control" min="1" max="10" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">جودة إتقانك (1-10)</label>
+                        <input type="number" id="skill-quality" class="form-control" min="1" max="10" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">سرعة التنفيذ (1-10)</label>
+                        <input type="number" id="skill-speed" class="form-control" min="1" max="10" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">الشغف بالمهارة (1-10)</label>
+                        <input type="number" id="skill-passion" class="form-control" min="1" max="10" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">مستوى الدخل الحالي (1-10)</label>
+                        <input type="number" id="skill-income" class="form-control" min="1" max="10" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">قوة معرض الأعمال (0-10)</label>
+                        <input type="number" id="skill-portfolio" class="form-control" min="0" max="10" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">عدد العملاء السابقين</label>
+                        <input type="number" id="skill-clients" class="form-control" min="0" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">سنوات الخبرة</label>
+                    <input type="number" id="skill-years" class="form-control" min="0" step="0.5" required>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
+                    <button type="button" class="btn btn-outline" id="cancel-modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-save"></i> حفظ المهارة</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        /**
+         * Freelance Skill Matrix & Financial Ikigai
+         * Architecture Modules:
+         * 1. NotificationManager
+         * 2. ThemeManager
+         * 3. StorageManager (with Mock Data Injector)
+         * 4. ScoringEngine
+         * 5. SkillManager
+         * 6. DashboardManager
+         * 7. ChartManager
+         * 8. IkigaiEngine
+         * 9. RecommendationEngine
+         * 10. ReportGenerator
+         * 11. ImportExportManager
+         * 12. UIController
+         * 13. App (Main Bootstrap)
+         */
+
+        // Utility: Generate Unique ID
+        const generateId = () => '_' + Math.random().toString(36).substr(2, 9);
+
+        class NotificationManager {
+            constructor() {
+                this.container = document.getElementById('toast-container');
+            }
+            show(message, type = 'info') {
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+                toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${message}</span>`;
+                this.container.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+            confirm(message) {
+                return window.confirm(message); // Using standard confirm for strictness, can be upgraded to custom modal if needed, but rules say 'no alert()'. I will use a custom approach to avoid breaking rules.
+            }
+        }
+        const notifier = new NotificationManager();
+
+        // Custom Confirm dialog function replacing native confirm() to adhere to rules
+        function customConfirm(message, callback) {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay active';
+            overlay.style.zIndex = '10000';
+            const box = document.createElement('div');
+            box.className = 'modal-content glass-panel';
+            box.style.maxWidth = '400px';
+            box.style.textAlign = 'center';
+            
+            box.innerHTML = `
+                <h3 style="margin-bottom: 1rem; color: var(--text-color);">تأكيد</h3>
+                <p style="margin-bottom: 1.5rem; color: var(--text-muted);">${message}</p>
+                <div style="display: flex; justify-content: center; gap: 1rem;">
+                    <button class="btn btn-outline" id="btn-confirm-cancel">إلغاء</button>
+                    <button class="btn btn-danger" id="btn-confirm-ok">موافق</button>
+                </div>
+            `;
+            overlay.appendChild(box);
+            document.body.appendChild(overlay);
+
+            document.getElementById('btn-confirm-cancel').onclick = () => { overlay.remove(); callback(false); };
+            document.getElementById('btn-confirm-ok').onclick = () => { overlay.remove(); callback(true); };
+        }
+
+        class ThemeManager {
+            constructor() {
+                this.btn = document.getElementById('theme-toggle');
+                this.html = document.documentElement;
+                this.currentTheme = localStorage.getItem('theme') || 'dark';
+                this.applyTheme();
+                this.btn.addEventListener('click', () => this.toggle());
+            }
+            applyTheme() {
+                this.html.setAttribute('data-theme', this.currentTheme);
+                this.btn.innerHTML = this.currentTheme === 'dark' ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+                localStorage.setItem('theme', this.currentTheme);
+                // Trigger chart re-render if app exists
+                if(window.appInstance && window.appInstance.charts) {
+                    window.appInstance.updateAll();
+                }
+            }
+            toggle() {
+                this.currentTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+                this.applyTheme();
+            }
+        }
+
+        class StorageManager {
+            constructor() {
+                this.storageKey = 'freelance_skills_data';
+            }
+            load() {
+                try {
+                    const data = localStorage.getItem(this.storageKey);
+                    if (data) {
+                        return JSON.parse(data);
+                    }
+                } catch (e) {
+                    console.error("Error parsing local storage data", e);
+                }
+                return this.getInitialData(); // If empty or error, load defaults
+            }
+            save(data) {
+                localStorage.setItem(this.storageKey, JSON.stringify(data));
+            }
+            clear() {
+                localStorage.removeItem(this.storageKey);
+            }
+            
+            // Generate a robust list of diverse skills for different markets to fulfill requirements
+            getInitialData() {
+                return []; // القيمة الافتراضية أصبحت فارغة
+            }
+        }
+
+        class ScoringEngine {
+            static calculate(skill) {
+                // Base Scores (out of 100)
+                const qualityScore = skill.quality * 10;
+                const speedScore = skill.speed * 10;
+                const passionScore = skill.passion * 10;
+                const marketScore = skill.demand * 10;
+                const incomeScore = skill.income * 10;
+                
+                // Bonuses
+                const portfolioBonus = Math.min(skill.portfolio * 2, 20); // Max 20 points
+                const clientBonus = Math.min(skill.clients * 0.5, 20); // Max 20 points
+                const experienceScore = Math.min(skill.years * 5, 20); // Max 20 points
+
+                // Complex Indices
+                // 1. Readiness (How ready to sell this skill right now)
+                let readinessScore = ((skill.quality * 0.5) + (skill.speed * 0.3) + (skill.portfolio * 0.2)) * 10;
+                readinessScore = Math.min(Math.round(readinessScore + clientBonus), 100);
+
+                // 2. Profitability (Potential to make money)
+                let profitabilityScore = ((skill.demand * 0.4) + (skill.income * 0.6)) * 10;
+                profitabilityScore = Math.round(profitabilityScore);
+
+                // 3. Professional Score (Overall mastery)
+                let professionalScore = ((skill.quality * 0.6) + (skill.years * 0.4)) * 10;
+                professionalScore = Math.min(Math.round(professionalScore + portfolioBonus), 100);
+
+                return {
+                    ...skill,
+                    qualityScore,
+                    speedScore,
+                    passionScore,
+                    marketScore,
+                    incomeScore,
+                    portfolioBonus,
+                    clientBonus,
+                    experienceScore,
+                    readinessScore,
+                    profitabilityScore,
+                    professionalScore
+                };
+            }
+        }
+
+        class SkillManager {
+            constructor(initialData) {
+                this.skills = initialData.map(s => ScoringEngine.calculate(s));
+            }
+            getAll() { return this.skills; }
+            getById(id) { return this.skills.find(s => s.id === id); }
+            add(skillData) {
+                const newSkill = ScoringEngine.calculate({ ...skillData, id: generateId() });
+                this.skills.push(newSkill);
+                return newSkill;
+            }
+            update(id, updatedData) {
+                const index = this.skills.findIndex(s => s.id === id);
+                if (index !== -1) {
+                    this.skills[index] = ScoringEngine.calculate({ ...this.skills[index], ...updatedData });
+                    return true;
+                }
+                return false;
+            }
+            delete(id) {
+                this.skills = this.skills.filter(s => s.id !== id);
+            }
+            duplicate(id) {
+                const skill = this.getById(id);
+                if(skill) {
+                    const copy = { ...skill, id: generateId(), name: skill.name + " (نسخة)" };
+                    this.skills.push(copy);
+                    return true;
+                }
+                return false;
+            }
+            setAll(newSkills) {
+                this.skills = newSkills.map(s => ScoringEngine.calculate(s));
+            }
+        }
+
+        class DashboardManager {
+            static update(skills) {
+                if(!skills.length) {
+                    document.getElementById('stat-total-skills').innerText = '0';
+                    this.animateProgress('stat-readiness', 'prog-readiness', 0);
+                    this.animateProgress('stat-professional', 'prog-professional', 0);
+                    this.animateProgress('stat-profitability', 'prog-profitability', 0);
+                    return;
+                }
+                
+                document.getElementById('stat-total-skills').innerText = skills.length;
+                
+                const avgReadiness = Math.round(skills.reduce((acc, s) => acc + s.readinessScore, 0) / skills.length);
+                const avgProfessional = Math.round(skills.reduce((acc, s) => acc + s.professionalScore, 0) / skills.length);
+                const avgProfitability = Math.round(skills.reduce((acc, s) => acc + s.profitabilityScore, 0) / skills.length);
+                
+                this.animateProgress('stat-readiness', 'prog-readiness', avgReadiness);
+                this.animateProgress('stat-professional', 'prog-professional', avgProfessional);
+                this.animateProgress('stat-profitability', 'prog-profitability', avgProfitability);
+            }
+
+            static animateProgress(textId, barId, targetValue) {
+                const textEl = document.getElementById(textId);
+                const barEl = document.getElementById(barId);
+                
+                textEl.innerText = targetValue + '%';
+                setTimeout(() => {
+                    barEl.style.width = targetValue + '%';
+                }, 100); // small delay for animation trigger
+            }
+        }
+
+        class ChartManager {
+            constructor() {
+                this.charts = {};
+                this.defaultFontColor = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim();
+            }
+
+            updateThemeColors() {
+                this.defaultFontColor = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim();
+            }
+
+            render(skills) {
+                this.updateThemeColors();
+                this.renderMainRadar(skills);
+                this.renderMarketDoughnut(skills);
+                this.renderTopSkillsBar(skills);
+            }
+
+            destroyChart(id) {
+                if(this.charts[id]) {
+                    this.charts[id].destroy();
+                }
+            }
+
+            renderMainRadar(skills) {
+                this.destroyChart('radar');
+                if(!skills.length) return;
+                
+                const avgQuality = skills.reduce((a, b) => a + b.qualityScore, 0) / skills.length;
+                const avgSpeed = skills.reduce((a, b) => a + b.speedScore, 0) / skills.length;
+                const avgPassion = skills.reduce((a, b) => a + b.passionScore, 0) / skills.length;
+                const avgMarket = skills.reduce((a, b) => a + b.marketScore, 0) / skills.length;
+                const avgIncome = skills.reduce((a, b) => a + b.incomeScore, 0) / skills.length;
+
+                const ctx = document.getElementById('mainRadarChart').getContext('2d');
+                this.charts['radar'] = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['الجودة', 'السرعة', 'الشغف', 'طلب السوق', 'الدخل'],
+                        datasets: [{
+                            label: 'متوسط قدراتك',
+                            data: [avgQuality, avgSpeed, avgPassion, avgMarket, avgIncome],
+                            backgroundColor: 'rgba(79, 70, 229, 0.2)',
+                            borderColor: 'rgba(79, 70, 229, 1)',
+                            pointBackgroundColor: 'rgba(16, 185, 129, 1)',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { labels: { color: this.defaultFontColor } }, title: {display: true, text: 'خريطة القوة الشاملة', color: this.defaultFontColor} },
+                        scales: {
+                            r: {
+                                angleLines: { color: 'rgba(128,128,128,0.2)' },
+                                grid: { color: 'rgba(128,128,128,0.2)' },
+                                pointLabels: { color: this.defaultFontColor, font: {size: 14} },
+                                ticks: { backdropColor: 'transparent', color: this.defaultFontColor }
+                            }
+                        }
+                    }
+                });
+            }
+
+            renderMarketDoughnut(skills) {
+                this.destroyChart('doughnut');
+                if(!skills.length) return;
+
+                const markets = { 'مصر': 0, 'الوطن العربي': 0, 'عالمي': 0 };
+                skills.forEach(s => { if(markets[s.market] !== undefined) markets[s.market]++; });
+                
+                const ctx = document.getElementById('marketDoughnutChart').getContext('2d');
+                this.charts['doughnut'] = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(markets),
+                        datasets: [{
+                            data: Object.values(markets),
+                            backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { color: this.defaultFontColor } },
+                            title: { display: true, text: 'توزيع الأسواق', color: this.defaultFontColor }
+                        }
+                    }
+                });
+            }
+
+            renderTopSkillsBar(skills) {
+                this.destroyChart('bar');
+                if(!skills.length) return;
+
+                // Top 10 by Profitability
+                const topSkills = [...skills].sort((a,b) => b.profitabilityScore - a.profitabilityScore).slice(0, 10);
+                
+                const ctx = document.getElementById('topSkillsBarChart').getContext('2d');
+                this.charts['bar'] = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: topSkills.map(s => s.name),
+                        datasets: [
+                            {
+                                label: 'مؤشر الربحية',
+                                data: topSkills.map(s => s.profitabilityScore),
+                                backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                                borderRadius: 4
+                            },
+                            {
+                                label: 'جاهزية العمل',
+                                data: topSkills.map(s => s.readinessScore),
+                                backgroundColor: 'rgba(79, 70, 229, 0.7)',
+                                borderRadius: 4
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { color: this.defaultFontColor } },
+                            title: { display: true, text: 'أفضل 10 مهارات', color: this.defaultFontColor }
+                        },
+                        scales: {
+                            y: { grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { color: this.defaultFontColor } },
+                            x: { grid: { display: false }, ticks: { color: this.defaultFontColor } }
+                        }
+                    }
+                });
+            }
+        }
+
+        class IkigaiEngine {
+            static render(skills) {
+                const zones = {
+                    golden: [],      // High Passion, High Profit, High Quality
+                    uninvested: [],  // High Quality, Low Profit
+                    develop: [],     // High Passion, Low Quality
+                    upcoming: []     // High Demand, Low Quality/Speed
+                };
+
+                skills.forEach(skill => {
+                    if (skill.passion >= 7 && skill.profitabilityScore >= 70 && skill.quality >= 7) {
+                        zones.golden.push(skill);
+                    } else if (skill.quality >= 8 && skill.profitabilityScore < 60) {
+                        zones.uninvested.push(skill);
+                    } else if (skill.passion >= 8 && skill.quality < 7) {
+                        zones.develop.push(skill);
+                    } else if (skill.demand >= 8 && skill.quality < 6) {
+                        zones.upcoming.push(skill);
+                    }
+                });
+
+                const renderZone = (zoneId, arr) => {
+                    const el = document.getElementById(zoneId);
+                    if(arr.length === 0) {
+                        el.innerHTML = '<span style="color:var(--text-muted); font-size:0.9rem;">لا توجد مهارات في هذه المنطقة حالياً.</span>';
+                        return;
+                    }
+                    el.innerHTML = arr.map(s => `<span class="ikigai-skill-tag">${s.name} (${s.market})</span>`).join('');
+                };
+
+                renderZone('zone-golden-items', zones.golden);
+                renderZone('zone-uninvested-items', zones.uninvested);
+                renderZone('zone-develop-items', zones.develop);
+                renderZone('zone-upcoming-items', zones.upcoming);
+            }
+        }
+
+        class RecommendationEngine {
+            static render(skills) {
+                const container = document.getElementById('recommendations-container');
+                container.innerHTML = '';
+                
+                // Sort by professional score to prioritize best skills
+                const sorted = [...skills].sort((a,b) => b.professionalScore - a.professionalScore).slice(0, 15); // Top 15 for recs to avoid long lists
+
+                if(sorted.length === 0) {
+                    container.innerHTML = '<p class="text-center text-muted">لا توجد مهارات لتقديم توصيات.</p>';
+                    return;
+                }
+
+                sorted.forEach(skill => {
+                    let recs = [];
+                    let bestPlatform = skill.market === 'عالمي' ? 'Upwork / Fiverr' : (skill.market === 'الوطن العربي' ? 'مستقل / خمسات' : 'جروبات فيسبوك / شبكات محلية');
+                    let targetRate = skill.market === 'عالمي' ? '$$$' : (skill.market === 'الوطن العربي' ? '$$' : '$');
+
+                    // Logic
+                    if (skill.portfolio < 5) recs.push('تحتاج لبناء معرض أعمال (Portfolio) قوي فوراً، قم بتنفيذ مشاريع وهمية أو تطوعية.');
+                    if (skill.clients === 0 && skill.quality >= 7) recs.push('جودتك ممتازة لكن ينقصك العملاء. ابدأ بالتسويق لنفسك على LinkedIn.');
+                    if (skill.speed < 6) recs.push('سرعة التنفيذ بطيئة. ابحث عن أدوات (Tools) أو قوالب لتسريع عملك لزيادة الربحية.');
+                    if (skill.demand >= 8 && skill.quality < 6) recs.push('الطلب على هذه المهارة عالٍ جداً. خصص ساعة يومياً لدراستها ورفع مستواك لاقتناص الفرصة.');
+                    if (recs.length === 0) recs.push('استمر في هذا المستوى الممتاز، وركز على رفع أسعارك التدريجي (Upselling) للعملاء الحاليين.');
+
+                    const card = document.createElement('div');
+                    card.className = 'glass-panel rec-card';
+                    card.innerHTML = `
+                        <h4 style="color: var(--primary-color); margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
+                            ${skill.name}
+                            <span style="font-size: 0.8rem; background: var(--bg-color); padding: 0.2rem 0.5rem; border-radius:4px;">${bestPlatform} | ${targetRate}</span>
+                        </h4>
+                        <div style="display:flex; gap: 1rem; font-size:0.85rem; margin-bottom:0.5rem; color:var(--text-muted);">
+                            <span>الاحترافية: ${skill.professionalScore}%</span>
+                            <span>الربحية: ${skill.profitabilityScore}%</span>
+                        </div>
+                        <ul class="rec-steps">
+                            ${recs.map(r => `<li>${r}</li>`).join('')}
+                        </ul>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+        }
+
+        class ImportExportManager {
+            constructor(skillManager, updateCallback) {
+                this.skillManager = skillManager;
+                this.updateCallback = updateCallback;
+                this.setupListeners();
+            }
+
+            setupListeners() {
+                document.getElementById('btn-export-json').addEventListener('click', () => this.exportJSON());
+                document.getElementById('btn-export-csv').addEventListener('click', () => this.exportCSV());
+                
+                const fileInput = document.getElementById('import-file');
+                document.getElementById('btn-import-trigger').addEventListener('click', () => fileInput.click());
+                fileInput.addEventListener('change', (e) => this.importJSON(e));
+
+                document.getElementById('btn-reset-data').addEventListener('click', () => {
+                    customConfirm("هل أنت متأكد من مسح جميع البيانات؟ لا يمكن التراجع عن هذه الخطوة.", (confirmed) => {
+                        if(confirmed) {
+                            this.skillManager.setAll([]);
+                            this.updateCallback();
+                            notifier.show('تم مسح جميع البيانات بنجاح', 'success');
+                        }
+                    });
+                });
+            }
+
+            exportJSON() {
+                const data = JSON.stringify(this.skillManager.getAll(), null, 2);
+                const blob = new Blob([data], { type: "application/json" });
+                this.downloadBlob(blob, `skills_backup_${new Date().toISOString().slice(0,10)}.json`);
+                notifier.show('تم تصدير البيانات بنجاح', 'success');
+            }
+
+            exportCSV() {
+                const skills = this.skillManager.getAll();
+                if(!skills.length) return;
+                
+                const headers = Object.keys(skills[0]).join(',');
+                const rows = skills.map(skill => Object.values(skill).map(val => `"${val}"`).join(','));
+                const csv = [headers, ...rows].join('\n');
+                
+                // Add BOM for Arabic Excel support
+                const blob = new Blob(['\uFEFF' + csv], { type: "text/csv;charset=utf-8;" });
+                this.downloadBlob(blob, `skills_data_${new Date().toISOString().slice(0,10)}.csv`);
+                notifier.show('تم تصدير CSV بنجاح', 'success');
+            }
+
+            importJSON(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        if(Array.isArray(data)) {
+                            this.skillManager.setAll(data);
+                            this.updateCallback();
+                            notifier.show('تم استيراد البيانات بنجاح', 'success');
+                        } else {
+                            throw new Error("Invalid format");
+                        }
+                    } catch (err) {
+                        notifier.show('خطأ في قراءة الملف', 'error');
+                    }
+                };
+                reader.readAsText(file);
+                event.target.value = ''; // Reset input
+            }
+
+            downloadBlob(blob, filename) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        class ReportGenerator {
+            static async generatePDF() {
+                notifier.show('جاري تجهيز التقرير، يرجى الانتظار...', 'info');
+                const element = document.getElementById('report-content');
+                const opt = {
+                    margin:       10,
+                    filename:     `Freelance_Report_${new Date().toISOString().slice(0,10)}.pdf`,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2, useCORS: true },
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                // Show all sections temporarily for PDF
+                const sections = document.querySelectorAll('.page-section');
+                const originalActive = document.querySelector('.page-section.active');
+                sections.forEach(s => s.classList.add('active'));
+
+                // Save Theme, force light mode for better printing
+                const html = document.documentElement;
+                const currentTheme = html.getAttribute('data-theme');
+                html.setAttribute('data-theme', 'light');
+                window.appInstance.chartManager.updateThemeColors(); // Update chart colors for light mode
+                window.appInstance.updateChartsOnly();
+
+                // Small delay to allow rendering
+                setTimeout(() => {
+                    html2pdf().set(opt).from(element).save().then(() => {
+                        // Restore state
+                        sections.forEach(s => s.classList.remove('active'));
+                        if(originalActive) originalActive.classList.add('active');
+                        html.setAttribute('data-theme', currentTheme);
+                        window.appInstance.chartManager.updateThemeColors();
+                        window.appInstance.updateChartsOnly();
+                        notifier.show('تم تصدير التقرير بنجاح', 'success');
+                    });
+                }, 1000);
+            }
+        }
+
+        class App {
+            constructor() {
+                this.storage = new StorageManager();
+                this.skillManager = new SkillManager(this.storage.load());
+                this.theme = new ThemeManager();
+                this.chartManager = new ChartManager();
+                
+                this.setupNavigation();
+                this.setupModal();
+                this.setupSkillsView();
+                
+                new ImportExportManager(this.skillManager, () => this.updateAll());
+                document.getElementById('export-pdf-btn').addEventListener('click', () => ReportGenerator.generatePDF());
+
+                this.updateAll();
+                window.appInstance = this; // Expose for theme manager
+            }
+
+            setupNavigation() {
+                const items = document.querySelectorAll('.nav-item');
+                const sections = document.querySelectorAll('.page-section');
+                const title = document.getElementById('page-title');
+                
+                items.forEach(item => {
+                    item.addEventListener('click', () => {
+                        items.forEach(i => i.classList.remove('active'));
+                        item.classList.add('active');
+                        
+                        const target = item.getAttribute('data-target');
+                        sections.forEach(s => {
+                            if(s.id === target) {
+                                s.classList.add('active');
+                                title.innerText = item.innerText;
+                            } else {
+                                s.classList.remove('active');
+                            }
+                        });
+
+                        if(window.innerWidth <= 768) {
+                            document.getElementById('sidebar').classList.remove('mobile-open');
+                        }
+                    });
+                });
+
+                document.getElementById('mobile-toggle').addEventListener('click', () => {
+                    document.getElementById('sidebar').classList.toggle('mobile-open');
+                });
+            }
+
+            setupModal() {
+                const modal = document.getElementById('skill-modal');
+                const form = document.getElementById('skill-form');
+                
+                const openModal = (skill = null) => {
+                    modal.classList.add('active');
+                    if(skill) {
+                        document.getElementById('modal-title').innerText = 'تعديل المهارة';
+                        document.getElementById('skill-id').value = skill.id;
+                        document.getElementById('skill-name').value = skill.name;
+                        document.getElementById('skill-market').value = skill.market;
+                        document.getElementById('skill-demand').value = skill.demand;
+                        document.getElementById('skill-quality').value = skill.quality;
+                        document.getElementById('skill-speed').value = skill.speed;
+                        document.getElementById('skill-passion').value = skill.passion;
+                        document.getElementById('skill-income').value = skill.income;
+                        document.getElementById('skill-portfolio').value = skill.portfolio;
+                        document.getElementById('skill-clients').value = skill.clients;
+                        document.getElementById('skill-years').value = skill.years;
+                    } else {
+                        document.getElementById('modal-title').innerText = 'إضافة مهارة جديدة';
+                        form.reset();
+                        document.getElementById('skill-id').value = '';
+                    }
+                };
+
+                const closeModal = () => modal.classList.remove('active');
+
+                document.getElementById('btn-open-add-modal').addEventListener('click', () => openModal());
+                document.getElementById('close-modal').addEventListener('click', closeModal);
+                document.getElementById('cancel-modal').addEventListener('click', closeModal);
+                
+                // Form Submit
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const data = {
+                        name: document.getElementById('skill-name').value,
+                        market: document.getElementById('skill-market').value,
+                        demand: Number(document.getElementById('skill-demand').value),
+                        quality: Number(document.getElementById('skill-quality').value),
+                        speed: Number(document.getElementById('skill-speed').value),
+                        passion: Number(document.getElementById('skill-passion').value),
+                        income: Number(document.getElementById('skill-income').value),
+                        portfolio: Number(document.getElementById('skill-portfolio').value),
+                        clients: Number(document.getElementById('skill-clients').value),
+                        years: Number(document.getElementById('skill-years').value)
+                    };
+
+                    const id = document.getElementById('skill-id').value;
+                    if(id) {
+                        this.skillManager.update(id, data);
+                        notifier.show('تم التعديل بنجاح', 'success');
+                    } else {
+                        this.skillManager.add(data);
+                        notifier.show('تم الإضافة بنجاح', 'success');
+                    }
+                    
+                    closeModal();
+                    this.updateAll();
+                });
+
+                // Attach to window for dynamic buttons in skill cards
+                window.editSkill = (id) => openModal(this.skillManager.getById(id));
+                window.deleteSkill = (id) => {
+                    customConfirm("هل تريد حذف هذه المهارة حقاً؟", (res) => {
+                        if(res) {
+                            this.skillManager.delete(id);
+                            notifier.show('تم الحذف', 'error');
+                            this.updateAll();
+                        }
+                    });
+                };
+                window.copySkill = (id) => {
+                    this.skillManager.duplicate(id);
+                    notifier.show('تم تكرار المهارة', 'success');
+                    this.updateAll();
+                }
+            }
+
+            setupSkillsView() {
+                const search = document.getElementById('search-skill');
+                const filter = document.getElementById('filter-market');
+                
+                const render = () => {
+                    const q = search.value.toLowerCase();
+                    const f = filter.value;
+                    let filtered = this.skillManager.getAll().filter(s => {
+                        const matchName = s.name.toLowerCase().includes(q);
+                        const matchMarket = f === 'all' || s.market === f;
+                        return matchName && matchMarket;
+                    });
+                    this.renderSkillsList(filtered);
+                };
+
+                search.addEventListener('input', render);
+                filter.addEventListener('change', render);
+            }
+
+            renderSkillsList(skills) {
+                const container = document.getElementById('skills-container');
+                container.innerHTML = '';
+                
+                if(skills.length === 0) {
+                    container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 2rem; color:var(--text-muted);">لا توجد مهارات مطابقة.</div>';
+                    return;
+                }
+
+                skills.forEach(skill => {
+                    const card = document.createElement('div');
+                    card.className = 'skill-card glass-panel';
+                    card.innerHTML = `
+                        <div class="skill-header">
+                            <div>
+                                <div class="skill-title">${skill.name}</div>
+                                <span class="skill-market"><i class="fa-solid fa-globe"></i> ${skill.market}</span>
+                            </div>
+                            <div style="font-size:1.5rem; font-weight:bold; color:var(--success-color);" title="الجاهزية">${skill.readinessScore}%</div>
+                        </div>
+                        <div class="skill-metrics">
+                            <div class="metric"><span>الجودة:</span> <strong>${skill.quality}/10</strong></div>
+                            <div class="metric"><span>الطلب:</span> <strong>${skill.demand}/10</strong></div>
+                            <div class="metric"><span>الخبرة:</span> <strong>${skill.years} سنة</strong></div>
+                            <div class="metric"><span>العملاء:</span> <strong>${skill.clients}</strong></div>
+                        </div>
+                        <div class="progress-container" style="height:4px; background:rgba(128,128,128,0.2); margin-top:0.5rem; border-radius:2px;">
+                            <div style="height:100%; width:${skill.professionalScore}%; background:var(--info-color); border-radius:2px;"></div>
+                        </div>
+                        <div style="font-size:0.8rem; text-align:center; color:var(--text-muted); margin-top:0.2rem;">الاحترافية: ${skill.professionalScore}%</div>
+                        
+                        <div class="skill-actions">
+                            <button class="btn btn-outline" style="padding:0.3rem 0.6rem; font-size:0.85rem;" onclick="copySkill('${skill.id}')" title="نسخ"><i class="fa-regular fa-copy"></i></button>
+                            <button class="btn btn-primary" style="padding:0.3rem 0.6rem; font-size:0.85rem;" onclick="editSkill('${skill.id}')"><i class="fa-solid fa-pen"></i> تعديل</button>
+                            <button class="btn btn-danger" style="padding:0.3rem 0.6rem; font-size:0.85rem;" onclick="deleteSkill('${skill.id}')"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+
+            updateChartsOnly() {
+                const skills = this.skillManager.getAll();
+                this.chartManager.render(skills);
+            }
+
+            updateAll() {
+                const skills = this.skillManager.getAll();
+                
+                // Save state
+                this.storage.save(skills);
+                
+                // Update UI Components
+                DashboardManager.update(skills);
+                this.chartManager.render(skills);
+                this.renderSkillsList(skills);
+                IkigaiEngine.render(skills);
+                RecommendationEngine.render(skills);
+            }
+        }
+
+        // Initialize App on DOM Load
+        document.addEventListener('DOMContentLoaded', () => {
+            new App();
+        });
+
+    </script>
+</body>
+</html>
